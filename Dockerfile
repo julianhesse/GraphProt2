@@ -16,6 +16,7 @@ ENV CONDA_DIR $HOME/miniconda3
 RUN chmod +x /method/Miniconda3-py37_4.9.2-Linux-x86_64.sh
 RUN /method/Miniconda3-py37_4.9.2-Linux-x86_64.sh -b -p $CONDA_DIR
 ENV PATH=$CONDA_DIR/bin:$PATH
+RUN chmod +x $CONDA_DIR/etc/profile.d/conda.sh
 RUN echo ". $CONDA_DIR/etc/profile.d/conda.sh" >> ~/.profile
 RUN conda --version
 RUN conda init bash

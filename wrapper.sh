@@ -5,6 +5,10 @@
 # $3 prediction file
 # $4 output foulder
 
+## setup conda env
+source /miniconda3/etc/profile.d/conda.sh
+conda activate gp2env
+
 ## Test
 export PATH=/usr/local/cuda/bin:$PATH
 echo $CPATH
@@ -16,8 +20,8 @@ python -c "import torch; print(torch.version.cuda)"
 nvcc --version
 
 ## Training of network
-#graphprot2 gt --in $1 --neg-in $2 --out $4/train_data
-#graphprot2 train --in $4/train_data --out $4/trained_model
+graphprot2 gt --in $1 --neg-in $2 --out $4/train_data
+graphprot2 train --in $4/train_data --out $4/trained_model
 
 ## Prediction of network
 graphprot2 gp --in $3 --train-in $4/trained_model --out $4/prediction_data
