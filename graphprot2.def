@@ -7,18 +7,20 @@ From: nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 %post
     nvcc --version
+    export CONDA_DIR=/miniconda3
 
     chmod +x /method/Miniconda3-py37_4.9.2-Linux-x86_64.sh
     /bin/bash /method/Miniconda3-py37_4.9.2-Linux-x86_64.sh -b -p $CONDA_DIR
     chmod +x $CONDA_DIR/etc/profile.d/conda.sh
     echo ". $CONDA_DIR/etc/profile.d/conda.sh" >> ~/.profile
-    conda --version
-    conda init bash
-    conda update -n base -c defaults conda
-    conda create -n gp2env python=3.7
-    conda clean --all --yes
+    /bin/bash --login -c "conda --version"
+    /bin/bash --login -c "conda init bash"
+    # /bin/bash --login -c "conda update -n base -c defaults conda"
+    /bin/bash --login -c "conda create -n gp2env python=3.7"
+    # /bin/bash --login -c "conda clean --all --yes"
 
-    conda activate gp2env &&\
+    /bin/bash --login -c "echo $HOME"
+    /bin/bash --login -c "source ~/.bashrc && conda activate gp2env &&\
           pip install torch==1.2.0 &&\
           pip install torchvision==0.4.0 &&\
           conda install cudatoolkit=10.0 -c pytorch &&\
@@ -26,41 +28,42 @@ From: nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
           pip install torch-sparse==0.4.0 -f https://pytorch-geometric.com/whl/torch-1.5.0.html &&\
           pip install torch-cluster==1.4.4 -f https://pytorch-geometric.com/whl/torch-1.5.0.html &&\
           pip install torch-spline-conv==1.1.0 -f https://pytorch-geometric.com/whl/torch-1.5.0.html &&\
-          pip install torch-geometric==1.3.1
+          pip install torch-geometric==1.3.1"
 
-    conda activate gp2env &&\
-          python -c "import torch; print(torch.__version__)" &&\
-          python -c "import torch; print(torch.cuda.is_available())" &&\
-          python -c "import torch; print(torch.version.cuda)"
+    /bin/bash --login -c "source ~/.bashrc && conda activate gp2env &&\
+          python -c 'import torch; print(torch.__version__)' &&\
+          python -c 'import torch; print(torch.cuda.is_available())' &&\
+          python -c 'import torch; print(torch.version.cuda)'"
 
 
-    conda activate gp2env &&\
+    /bin/bash --login -c "source ~/.bashrc && conda activate gp2env &&\
           conda install -c bioconda bedtools &&\
           conda install -c bioconda ucsc-twobitinfo &&\
           conda install -c bioconda ucsc-twobittofa &&\
-          conda install -c bioconda ucsc-bigwigaverageoverbed
-
-    conda activate gp2env &&\
-          python -m pip install /method --ignore-installed --no-deps -vv
-
-    conda activate gp2env &&\
+          conda install -c bioconda ucsc-bigwigaverageoverbed &&\
+          python -m pip install /method --ignore-installed --no-deps -vv &&\
           conda install seaborn==0.10.1 &&\
           conda install -c bioconda viennarna=2.4.14 &&\
           pip install markdown==3.2.2 &&\
           pip install logomaker==0.8 &&\
           pip install ushuffle &&\
-          pip install requests
+          pip install requests"
 
+    /bin/bash --login -c "conda clean --all --yes"
+    rm -rf ~/.cache/pip
     echo "Finished!!!"
 
 %environment
-    export PATH=/usr/local/cuda/bin:$PATH
-    export CPATH=/usr/local/cuda/include:$CPATH
-    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-    export DYLD_LIBRARY_PATH=/usr/local/cuda/lib:$DYLD_LIBRARY_PATH
-    export CONDA_DIR $HOME/miniconda3
-    export PATH=$CONDA_DIR/bin:$PATH
-    export ENV_PREFIX gp2env
+    PATH=/usr/local/cuda/bin:$PATH
+    CPATH=/usr/local/cuda/include:$CPATH
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    DYLD_LIBRARY_PATH=/usr/local/cuda/lib:$DYLD_LIBRARY_PATH
+    export PATH CPATH LD_LIBRARY DYLD_LIBRARY
+
+    CONDA_DIR=/miniconda3
+    PATH=$CONDA_DIR/bin:$PATH
+    ENV_PREFIX=gp2env
+    export CONDA_DIR PATH ENV_PREFIX
 
 %runscript
     /usr/local/bin/entrypoint.sh

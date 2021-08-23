@@ -65,6 +65,7 @@ RUN conda activate gp2env &&\
       pip install ushuffle &&\
       pip install requests
 
+RUN conda clean --all --yes
 
 # needed to activate environment before every command
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
